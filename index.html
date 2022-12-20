@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RSA加密测试</title>
+    <script src="rsa1.js"></script>
+    <style>
+        table {
+            width: 100%;
+        }
+
+        tr td:first-child {
+            width: 300px;
+        }
+
+        #hex-public-key {
+            width: 90%;
+            height: 100px;
+        }
+
+        #exponent {
+            width: 90%;
+        }
+
+        #submit {
+            width: 100px;
+            height: 50px;
+        }
+
+        #content {
+            width: 90%;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td><label for="hex-public-key">hex public key: </label></td>
+        <td><textarea id="hex-public-key"
+                      placeholder="c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td><label for="exponent">exponent:</label></td>
+        <td><input type="text" id="exponent" value="10001" placeholder="10001"></td>
+    </tr>
+    <tr>
+        <td><label for="content">content for rsa encrypted:</label></td>
+        <td><textarea id="content" placeholder=""></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2"><br>
+            <button id="submit" onclick="rsaEncrypted()">加密</button>
+        </td>
+    </tr>
+</table>
+<div>
+    <br>
+    <br>
+    <br>
+    <br>
+    加密结果： <p id="encrypt-result"></p>
+</div>
+<script>
+    function rsaEncrypted() {
+        setMaxDigits(130);
+        const hexPublicKey = document.getElementById("hex-public-key").value;
+        const exponent = document.getElementById("exponent").value;
+        const content = document.getElementById("content").value;
+        const rsaKeyPair = new RSAKeyPair(exponent, "", hexPublicKey);
+        const encryptedResult = encryptedString(rsaKeyPair, content);
+        document.getElementById("encrypt-result").innerText = encryptedResult;
+        return false;
+    }
+</script>
+</body>
+</html>
+
