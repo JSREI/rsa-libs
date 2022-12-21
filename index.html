@@ -31,6 +31,10 @@
             width: 90%;
             height: 100px;
         }
+
+        .tips {
+            color: #CCC;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +43,7 @@
         <td><label for="hex-public-key">hex public key: </label></td>
         <td><textarea id="hex-public-key"
                       placeholder="c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
+            <br><span class="tips">If the public key is incorrect, the page may get stuck and lose response during encryption. You can open the page again</span>
         </td>
     </tr>
     <tr>
@@ -60,14 +65,26 @@
     <br>
     <br>
     <br>
-    加密结果： <p id="encrypt-result"></p>
+    Result： <p id="encrypt-result"></p>
 </div>
 <script>
     function rsaEncrypted() {
         setMaxDigits(130);
         const hexPublicKey = document.getElementById("hex-public-key").value;
+        if (!hexPublicKey) {
+            alert("hex public key must not empty!")
+            return false;
+        }
         const exponent = document.getElementById("exponent").value;
+        if (!exponent) {
+            alert("exponent must not empty!");
+            return false;
+        }
         const content = document.getElementById("content").value;
+        if (!content) {
+            alert("content must not empty!");
+            return false;
+        }
         const rsaKeyPair = new RSAKeyPair(exponent, "", hexPublicKey);
         const encryptedResult = encryptedString(rsaKeyPair, content);
         document.getElementById("encrypt-result").innerText = encryptedResult;
