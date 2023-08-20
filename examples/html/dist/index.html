@@ -70,17 +70,17 @@
 <script>
     function rsaEncrypted() {
         setMaxDigits(130);
-        const hexPublicKey = document.getElementById("hex-public-key").value;
+        const hexPublicKey = (document.getElementById("hex-public-key").value || "").trim();
         if (!hexPublicKey) {
             alert("hex public key must not empty!")
             return false;
         }
-        const exponent = document.getElementById("exponent").value;
+        const exponent = (document.getElementById("exponent").value || "").trim();
         if (!exponent) {
             alert("exponent must not empty!");
             return false;
         }
-        const content = document.getElementById("content").value;
+        const content = (document.getElementById("content").value || "").trim();
         if (!content) {
             alert("content must not empty!");
             return false;
