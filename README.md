@@ -9,21 +9,26 @@ RSA加密需要依赖的一些文件，在进行JavaScript逆向的时候经常�
 访问下面的连接可以在线测试：
 
 ```
-https://htmlpreview.github.io/?https://github.com/JSREI/rsa-lib/blob/main/examples/html/dist/index.html
+https://htmlpreview.github.io/?https://github.com/JSREI/rsa-libs/blob/main/examples/html/dev/index.html
 ```
 
 界面大概如下：
 
-![image-20230820233341351](README.assets/image-20230820233341351.png)
+![image-20230820234015071](README.assets/image-20230820234015071.png)
 
 加密结果：
 
-
+![image-20230820234003408](README.assets/image-20230820234003408.png)
 
 # 三、本地使用
 
-在线测试：
-[](https://htmlpreview.github.io/?https://github.com/JSREI/rsa-lib/blob/main/index.html)
+`libs/dev`下的三个文件是未压缩的原始文件依赖，RSA加密需要依赖这三个文件，而`libs/dist/rsa.min.js`文件是把上面的三个文件打包压缩的单个文件，根据自己的需要拷贝到自己项目的依赖中，API的使用可以参考此文件：
+
+```text
+https://github.com/JSREI/rsa-libs/blob/main/examples/html/dev/index.html
+```
+
+
 
 
 
