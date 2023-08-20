@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>RSA加密测试</title>
-    <script src="rsa1.js"></script>
+    <title>RSA encryption test</title>
+    <script src="../../libs/dist/rsa.min.js"></script>
     <style>
         table {
             width: 100%;
@@ -42,7 +42,7 @@
     <tr>
         <td><label for="hex-public-key">hex public key: </label></td>
         <td><textarea id="hex-public-key"
-                      placeholder="c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
+                      placeholder="A hex-encoded public key, such as: c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
             <br><span class="tips">If the public key is incorrect, the page may get stuck and lose response during encryption. You can open the page again</span>
         </td>
     </tr>
@@ -52,11 +52,11 @@
     </tr>
     <tr>
         <td><label for="content">content for rsa encrypted:</label></td>
-        <td><textarea id="content" placeholder=""></textarea></td>
+        <td><textarea id="content" placeholder="what to encrypt"></textarea></td>
     </tr>
     <tr>
         <td colspan="2"><br>
-            <button id="submit" onclick="rsaEncrypted()">加密</button>
+            <button id="submit" onclick="rsaEncrypted()">Encrypt</button>
         </td>
     </tr>
 </table>
@@ -65,7 +65,7 @@
     <br>
     <br>
     <br>
-    Result： <p id="encrypt-result"></p>
+    Result(hex encoded): <p id="encrypt-result"></p>
 </div>
 <script>
     function rsaEncrypted() {
