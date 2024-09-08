@@ -13,11 +13,17 @@
 
         tr td:first-child {
             width: 300px;
+            padding-top: 10px;
+            padding-bottom: 10px;
         }
 
-        #hex-public-key {
+        #public-key {
             width: 90%;
             height: 100px;
+        }
+
+        #public-key-encode-type {
+            width: 100px;;
         }
 
         #exponent {
@@ -42,19 +48,28 @@
 <body>
 <table>
     <tr>
-        <td><label for="hex-public-key">hex public key: </label></td>
-        <td><textarea id="hex-public-key"
-                      placeholder="A hex-encoded public key, such as: c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
+        <td><label for="public-key">Public key: </label></td>
+        <td><textarea id="public-key"
+                      placeholder="Public key, such as: c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
             <br><span class="tips">If the public key is incorrect, the page may get stuck and lose response during encryption. You can open the page again</span>
         </td>
     </tr>
     <tr>
-        <td><label for="exponent">exponent:</label></td>
+        <td>Public key encode type:</td>
+        <td>
+            <select name="public-key-encode-type" id="public-key-encode-type">
+                <option value="base64">base64</option>
+                <option value="hex">hex</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label for="exponent">Exponent:</label></td>
         <td><input type="text" id="exponent" value="10001" placeholder="10001"></td>
     </tr>
     <tr>
-        <td><label for="content">content for rsa encrypted:</label></td>
-        <td><textarea id="content" placeholder="what to encrypt"></textarea></td>
+        <td><label for="content">Content for rsa encrypted:</label></td>
+        <td><textarea id="content" placeholder="Paste the content you wish to encrypt here."></textarea></td>
     </tr>
     <tr>
         <td colspan="2"><br>
@@ -70,13 +85,97 @@
     Result(hex encoded): <p id="encrypt-result"></p>
 </div>
 <script>
+
+    // 粘贴公钥的时候自动识别公钥的编码方式
+    (() => {
+
+        /**
+         * 判断是否是base64编码的字符串
+         *
+         * @param str
+         * @returns {boolean}
+         */
+        function isBase64String(str) {
+            try {
+                // 正则表达式检查是否符合Base64格式
+                const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+                return base64Regex.test(str);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        /**
+         * 判断是否是16进制编码的字符串
+         *
+         * @param str
+         * @returns {boolean}
+         */
+        function isHexString(str) {
+            // 正则表达式检查是否为有效的16进制数
+            const hexRegex = /^[0-9A-Fa-f]+$/;
+            return hexRegex.test(str);
+        }
+
+        /**
+         * 自动识别并设置公钥的编码方式
+         */
+        function autoFillPublicKeyEncode() {
+            const content = publicKeyElt.value;
+            if (!content) {
+                return;
+            }
+
+            const publicKeyEncodeSelectElt = document.getElementById("public-key-encode-type");
+            if (isHexString(content.trim())) {
+                publicKeyEncodeSelectElt.value = "hex";
+            } else if (isBase64String(content.trim())) {
+                publicKeyEncodeSelectElt.value = "base64";
+            }
+        }
+
+        // 在内容改变的时候自动识别并设置编码方式
+        const publicKeyElt = document.getElementById("public-key");
+        publicKeyElt.oninput = autoFillPublicKeyEncode;
+        publicKeyElt.onchange = autoFillPublicKeyEncode;
+
+    })();
+
+    function base64ToHex(base64String) {
+        // 使用atob函数将Base64解码为二进制字符串
+        var binaryString = atob(base64String);
+
+        // 初始化一个空的十六进制字符串
+        var hexString = '';
+
+        // 遍历二进制字符串中的每个字符
+        for (var i = 0; i < binaryString.length; i++) {
+            // 将每个字符转换为它的ASCII码的十六进制表示
+            // 然后将其添加到十六进制字符串
+            var binary = binaryString.charCodeAt(i).toString(16);
+            // 如果ASCII码的十六进制表示只有一位数，前面补0
+            hexString += binary.length === 1 ? '0' + binary : binary;
+        }
+
+        // 返回生成的十六进制字符串
+        return hexString;
+    }
+
     function rsaEncrypted() {
+
         setMaxDigits(130);
-        const hexPublicKey = (document.getElementById("hex-public-key").value || "").trim();
-        if (!hexPublicKey) {
-            alert("hex public key must not empty!")
+        let publicKey = (document.getElementById("public-key").value || "").trim();
+        if (!publicKey) {
+            alert("public key must not empty!")
             return false;
         }
+
+        // 判断public key的编码方式，如果是base64的话则将其转换为hex string编码方式
+        const publicKeyEncodeType = document.getElementById("public-key-encode-type").value;
+        if (publicKeyEncodeType === 'base64') {
+            publicKey = base64ToHex(publicKey);
+        }
+
         const exponent = (document.getElementById("exponent").value || "").trim();
         if (!exponent) {
             alert("exponent must not empty!");
@@ -87,11 +186,12 @@
             alert("content must not empty!");
             return false;
         }
-        const rsaKeyPair = new RSAKeyPair(exponent, "", hexPublicKey);
+        const rsaKeyPair = new RSAKeyPair(exponent, "", publicKey);
         const encryptedResult = encryptedString(rsaKeyPair, content);
         document.getElementById("encrypt-result").innerText = encryptedResult;
         return false;
     }
+
 </script>
 </body>
 </html>
