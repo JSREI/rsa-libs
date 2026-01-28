@@ -7,84 +7,292 @@
     <script src="../../../libs/dev/Barrett.js"></script>
     <script src="../../../libs/dev/RSA.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ddd;
+            background-color: #f8f8f8;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 15px 25px;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+            color: #5a6c7d;
+        }
+
+        .tab button:hover {
+            background-color: #e9ecef;
+        }
+
+        .tab button.active {
+            background-color: #ffffff;
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 25px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeEffect 0.5s;
+        }
+
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
         table {
             width: 100%;
         }
 
         tr td:first-child {
             width: 300px;
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            color: #34495e;
+            font-weight: 500;
         }
 
-        #public-key {
+        textarea {
             width: 90%;
             height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f8fbff;
+            transition: border 0.3s;
         }
 
-        #public-key-encode-type {
-            width: 100px;;
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
 
-        #exponent {
+        input[type="text"] {
             width: 90%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f8fbff;
+            transition: border 0.3s;
         }
 
-        #submit {
-            width: 100px;
-            height: 50px;
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
 
-        #content {
-            width: 90%;
-            height: 100px;
+        select {
+            width: 120px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f8fbff;
+            transition: border 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
         .tips {
-            color: #CCC;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f0f7fb;
+            border-radius: 6px;
+            border-left: 5px solid #3498db;
+        }
+
+        #encrypt-result, #verify-result {
+            word-break: break-all;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #eef2f7;
+            border-radius: 4px;
+        }
+
+        /* 成功与失败状态的颜色 */
+        .success {
+            color: #27ae60;
+        }
+
+        .error {
+            color: #e74c3c;
         }
     </style>
 </head>
 <body>
-<table>
-    <tr>
-        <td><label for="public-key">Public key: </label></td>
-        <td><textarea id="public-key"
-                      placeholder="Public key, such as: c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
-            <br><span class="tips">If the public key is incorrect, the page may get stuck and lose response during encryption. You can open the page again</span>
-        </td>
-    </tr>
-    <tr>
-        <td>Public key encode type:</td>
-        <td>
-            <select name="public-key-encode-type" id="public-key-encode-type">
-                <option value="base64">base64</option>
-                <option value="hex">hex</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="exponent">Exponent:</label></td>
-        <td><input type="text" id="exponent" value="10001" placeholder="10001"></td>
-    </tr>
-    <tr>
-        <td><label for="content">Content for rsa encrypted:</label></td>
-        <td><textarea id="content" placeholder="Paste the content you wish to encrypt here."></textarea></td>
-    </tr>
-    <tr>
-        <td colspan="2"><br>
-            <button id="submit" onclick="rsaEncrypted()">Encrypt</button>
-        </td>
-    </tr>
-</table>
-<div>
-    <br>
-    <br>
-    <br>
-    <br>
-    Result(hex encoded): <p id="encrypt-result"></p>
-</div>
+    <h1>RSA Tools</h1>
+    
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'Encryption')">RSA Encryption</button>
+        <button class="tablinks" onclick="openTab(event, 'Verification')">RSA Key Pair Verification</button>
+    </div>
+    
+    <!-- RSA Encryption Tab -->
+    <div id="Encryption" class="tabcontent" style="display: block;">
+        <table>
+            <tr>
+                <td><label for="public-key">Public key: </label></td>
+                <td><textarea id="public-key"
+                            placeholder="Public key, such as: c2854a84fa523c12d258710908a673cc5fc2fa4d9ae1cbe136cbe57e678dc1599f6ae9f8f6428e2155675b1103c5bfd8a2c6b7abe40cef0bb4513230709d0752a6cc3e6ae8e0f8a2174c148f65d393ee63d76f17da0988a97ef21af99e4cbf550889cc340b4196d20ae51c38d3cdbc248e6dd4c3977fb4f3b882c4b6d29da2a9"></textarea>
+                    <div class="tips">If the public key is incorrect, the page may get stuck and lose response during encryption. You can open the page again</div>
+                </td>
+            </tr>
+            <tr>
+                <td>Public key encode type:</td>
+                <td>
+                    <select name="public-key-encode-type" id="public-key-encode-type">
+                        <option value="base64">base64</option>
+                        <option value="hex">hex</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="exponent">Exponent:</label></td>
+                <td><input type="text" id="exponent" value="10001" placeholder="10001"></td>
+            </tr>
+            <tr>
+                <td><label for="content">Content for rsa encrypted:</label></td>
+                <td><textarea id="content" placeholder="Paste the content you wish to encrypt here."></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="submit" onclick="rsaEncrypted()">Encrypt</button>
+                </td>
+            </tr>
+        </table>
+        <div class="result">
+            <strong>Result (hex encoded):</strong> 
+            <div id="encrypt-result"></div>
+        </div>
+    </div>
+    
+    <!-- RSA Key Pair Verification Tab -->
+    <div id="Verification" class="tabcontent">
+        <table>
+            <tr>
+                <td><label for="verify-public-key">Public key: </label></td>
+                <td><textarea id="verify-public-key" placeholder="Paste the public key here to verify if it matches with the private key."></textarea></td>
+            </tr>
+            <tr>
+                <td>Public key encode type:</td>
+                <td>
+                    <select name="verify-public-key-encode-type" id="verify-public-key-encode-type">
+                        <option value="base64">base64</option>
+                        <option value="hex">hex</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="verify-exponent">Exponent:</label></td>
+                <td><input type="text" id="verify-exponent" value="10001" placeholder="10001"></td>
+            </tr>
+            <tr>
+                <td><label for="private-key">Private key: </label></td>
+                <td><textarea id="private-key" placeholder="Paste the private key here to verify if it matches with the public key."></textarea></td>
+            </tr>
+            <tr>
+                <td>Private key encode type:</td>
+                <td>
+                    <select name="private-key-encode-type" id="private-key-encode-type">
+                        <option value="base64">base64</option>
+                        <option value="hex">hex</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="verify-key-pair" onclick="verifyKeyPair()">Verify Key Pair</button>
+                </td>
+            </tr>
+        </table>
+        <div class="result">
+            <strong>Verification Result:</strong> 
+            <div id="verify-result"></div>
+        </div>
+    </div>
+
 <script>
+    // 处理标签切换
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        
+        // 隐藏所有标签内容
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        
+        // 移除所有标签按钮的"active"类
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        
+        // 显示当前标签，并添加"active"类到按钮
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
 
     // 粘贴公钥的时候自动识别公钥的编码方式
     (() => {
@@ -139,6 +347,44 @@
         publicKeyElt.oninput = autoFillPublicKeyEncode;
         publicKeyElt.onchange = autoFillPublicKeyEncode;
 
+        // 为验证部分的公钥添加自动识别功能
+        function autoFillVerifyPublicKeyEncode() {
+            const content = verifyPublicKeyElt.value;
+            if (!content) {
+                return;
+            }
+
+            const publicKeyEncodeSelectElt = document.getElementById("verify-public-key-encode-type");
+            if (isHexString(content.trim())) {
+                publicKeyEncodeSelectElt.value = "hex";
+            } else if (isBase64String(content.trim())) {
+                publicKeyEncodeSelectElt.value = "base64";
+            }
+        }
+
+        // 为验证部分的私钥添加自动识别功能
+        function autoFillPrivateKeyEncode() {
+            const content = privateKeyElt.value;
+            if (!content) {
+                return;
+            }
+
+            const privateKeyEncodeSelectElt = document.getElementById("private-key-encode-type");
+            if (isHexString(content.trim())) {
+                privateKeyEncodeSelectElt.value = "hex";
+            } else if (isBase64String(content.trim())) {
+                privateKeyEncodeSelectElt.value = "base64";
+            }
+        }
+
+        const verifyPublicKeyElt = document.getElementById("verify-public-key");
+        verifyPublicKeyElt.oninput = autoFillVerifyPublicKeyEncode;
+        verifyPublicKeyElt.onchange = autoFillVerifyPublicKeyEncode;
+
+        const privateKeyElt = document.getElementById("private-key");
+        privateKeyElt.oninput = autoFillPrivateKeyEncode;
+        privateKeyElt.onchange = autoFillPrivateKeyEncode;
+
     })();
 
     function base64ToHex(base64String) {
@@ -189,6 +435,68 @@
         const rsaKeyPair = new RSAKeyPair(exponent, "", publicKey);
         const encryptedResult = encryptedString(rsaKeyPair, content);
         document.getElementById("encrypt-result").innerText = encryptedResult;
+        return false;
+    }
+
+    // 验证RSA密钥对的函数
+    function verifyKeyPair() {
+        setMaxDigits(130);
+        
+        // 获取公钥
+        let publicKey = (document.getElementById("verify-public-key").value || "").trim();
+        if (!publicKey) {
+            alert("Public key must not be empty!");
+            return false;
+        }
+
+        // 判断公钥的编码方式，如果是base64则转换为hex
+        const publicKeyEncodeType = document.getElementById("verify-public-key-encode-type").value;
+        if (publicKeyEncodeType === 'base64') {
+            publicKey = base64ToHex(publicKey);
+        }
+
+        // 获取指数
+        const exponent = (document.getElementById("verify-exponent").value || "").trim();
+        if (!exponent) {
+            alert("Exponent must not be empty!");
+            return false;
+        }
+
+        // 获取私钥
+        let privateKey = (document.getElementById("private-key").value || "").trim();
+        if (!privateKey) {
+            alert("Private key must not be empty!");
+            return false;
+        }
+
+        // 判断私钥的编码方式，如果是base64则转换为hex
+        const privateKeyEncodeType = document.getElementById("private-key-encode-type").value;
+        if (privateKeyEncodeType === 'base64') {
+            privateKey = base64ToHex(privateKey);
+        }
+
+        // 生成一个测试消息
+        const testMessage = "TestMessage" + new Date().getTime();
+        
+        try {
+            // 用公钥加密
+            const publicKeyPair = new RSAKeyPair(exponent, "", publicKey);
+            const encryptedMessage = encryptedString(publicKeyPair, testMessage);
+            
+            // 尝试用私钥解密
+            const privateKeyPair = new RSAKeyPair("", privateKey, publicKey);
+            const decryptedMessage = decryptedString(privateKeyPair, encryptedMessage);
+            
+            // 比较原始消息和解密后的消息
+            if (testMessage === decryptedMessage) {
+                document.getElementById("verify-result").innerHTML = "<span class='success'>✅ Success! The public key and private key are a matching pair.</span>";
+            } else {
+                document.getElementById("verify-result").innerHTML = "<span class='error'>❌ Mismatch! The keys do not form a valid pair.</span>";
+            }
+        } catch (error) {
+            document.getElementById("verify-result").innerHTML = "<span class='error'>❌ Error: " + error.message + "</span>";
+        }
+        
         return false;
     }
 
